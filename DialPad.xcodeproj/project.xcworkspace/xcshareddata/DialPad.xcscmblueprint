@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "2326FEDB98315407E0717C124EB35C51ED3935E3",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "92B83CF94FC0D89A91CCDEB47E5504C68E5EDE57" : 9223372036854775807,
+    "2326FEDB98315407E0717C124EB35C51ED3935E3" : 9223372036854775807
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "6CFADB7F-8C1D-42E8-947F-3234CA5B8941",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "92B83CF94FC0D89A91CCDEB47E5504C68E5EDE57" : "..",
+    "2326FEDB98315407E0717C124EB35C51ED3935E3" : "BMDialPad\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "DialPad",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "DialPad.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/IamSaurav\/BMDialPad.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "2326FEDB98315407E0717C124EB35C51ED3935E3"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/IamSaurav\/CocoaJuice.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "92B83CF94FC0D89A91CCDEB47E5504C68E5EDE57"
+    }
+  ]
+}
