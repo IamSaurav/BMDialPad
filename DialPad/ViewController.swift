@@ -14,7 +14,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         
         let dialView: BMDialView = BMDialView()
-        dialView.setupDialPad(frame: CGRect.init(x: 0, y: 100, width: self.view.frame.size.width, height: self.view.frame.size.height))
+        dialView.setupDialPad(frame: CGRect.init(x: 0, y: 0, width: self.view.frame.size.width, height: self.view.frame.size.height))
         self.view.addSubview(dialView)
         
     }

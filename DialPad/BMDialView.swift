@@ -13,7 +13,8 @@ class BMDialView: UIView {
     
     var padView: UIView?
     let GreenColor = UIColor(red: 21/255.0, green: 134/255.0, blue: 88/255.0, alpha: 1.0)
-    public static let requiredHeight = (UIScreen.main.bounds.width / 5) * 6
+    public var textField: UITextField?
+    public var requiredKeyPadHeight = (UIScreen.main.bounds.width / 5) * 6
     
     func setupDialPad(frame: CGRect)
     {
@@ -21,10 +22,21 @@ class BMDialView: UIView {
         setupUI()
     }
     
-    
     private func setupUI() -> Void {
+        
+        textField = UITextField()
+        textField?.frame = CGRect.init(x: 10, y: (frame.size.height - requiredKeyPadHeight - 100)/2, width: self.frame.size.width-20, height: 100)
+        textField?.adjustsFontSizeToFitWidth = true
+        textField?.textAlignment = NSTextAlignment.center
+        textField?.textColor = GreenColor;
+        textField?.font = UIFont.init(name: "HelveticaNeue-UltraLight", size: 45)
+        addSubview(textField!)
+        
         padView = UIView()
+        padView?.frame = CGRect.init(x: 0, y: frame.size.height - requiredKeyPadHeight, width: self.frame.size.width, height: requiredKeyPadHeight)
         self.addSubview(padView!)
+        
+        
         
         let digitsList = digits()
         
@@ -39,22 +51,21 @@ class BMDialView: UIView {
             let row = Float(i / 3).rounded(.towardZero)
             y = CGFloat(row) * (width + yGap)
             let frame = CGRect.init(x: x, y: y, width: width, height: width)
-            let btn = createButton(number: digit.number!, letter: digit.letters!, frame: frame)
-            btn.tag = i + 1000
+            createButton(number: digit.number!, letter: digit.letters!, frame: frame)
             x +=  xGap + width
             x = x > maxX ? xGap : x
         }
         
 //        let callBtn: UIButton = UIButton()
-//        btn.addTarget(self, action: #selector(buttonTapped), for: UIControlEvents.touchUpInside)
-//        btn.titleLabel?.font = UIFont.init(name: "HelveticaNeue-UltraLight", size: 20)
-//        btn.frame = frame;
-        
+//        callBtn.addTarget(self, action: #selector(buttonTapped), for: UIControlEvents.touchUpInside)
+//        callBtn.titleLabel?.font = UIFont.init(name: "HelveticaNeue-UltraLight", size: 20)
+//        callBtn.frame = CGRect.init(x: (padView?.frame.size.width-width/)2, y: <#T##CGFloat#>, width: <#T##CGFloat#>, height: <#T##CGFloat#>)
+//        padView?.addSubview(callBtn)
         
     }
     
-    private func createButton(number: String, letter: String, frame: CGRect) -> UIButton {
-        let btn: UIButton = UIButton()
+    private func createButton(number: String, letter: String, frame: CGRect) {
+        let btn: UIButton = UIButton.init(type: UIButtonType.system)
         btn.addTarget(self, action: #selector(buttonTapped), for: UIControlEvents.touchUpInside)
         btn.titleLabel?.font = UIFont.init(name: "HelveticaNeue-UltraLight", size: 20)
         btn.frame = frame;
@@ -68,7 +79,6 @@ class BMDialView: UIView {
         let letterAtt = NSAttributedString.init(string: "\n" + letter, attributes: [NSForegroundColorAttributeName : GreenColor, NSFontAttributeName : UIFont.init(name: "HelveticaNeue-UltraLight", size: 15)!])
         numberAtt.append(letterAtt)
         btn.setAttributedTitle(numberAtt, for: UIControlState.normal)
-        return btn
     }
     
     @objc private func buttonTapped(sender: UIButton) {
