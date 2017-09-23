@@ -28,7 +28,7 @@ class BMDialView: UIView {
     
     private func setupUI() -> Void {
         textField = UITextField()
-        textField?.tintColor = ThemeColor
+        textField?.tintColor = UIColor.clear
         let gap = self.frame.size.width/5
         textField?.frame = CGRect.init(x: gap/2, y: (frame.size.height - requiredKeyPadHeight - 100)/2, width: self.frame.size.width-gap, height: 100)
         textField?.adjustsFontSizeToFitWidth = true
