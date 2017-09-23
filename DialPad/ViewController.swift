@@ -16,6 +16,9 @@ class ViewController: UIViewController {
         let dialView: BMDialView = BMDialView()
         dialView.setupDialPad(frame: CGRect.init(x: 0, y: 0, width: self.view.frame.size.width, height: self.view.frame.size.height))
         self.view.addSubview(dialView)
+        dialView.callTapped = { number in
+            print(number)
+        }
         
     }
 

@@ -7,13 +7,18 @@
 //
 
 import UIKit
+import AudioToolbox
 
 class BMDialView: UIView {
     
-    var padView: UIView?
-    let GreenColor = UIColor(red: 21/255.0, green: 134/255.0, blue: 88/255.0, alpha: 1.0)
-    public var textField: UITextField?
-    public var requiredKeyPadHeight = (UIScreen.main.bounds.width / 5) * 6 + 50
+    var callTapped: ((String)->())?
+    let ThemeColor = UIColor(red: 21/255.0, green: 134/255.0, blue: 88/255.0, alpha: 1.0)
+    
+    private var padView: UIView?
+    private var textField: UITextField?
+    private var requiredKeyPadHeight = (UIScreen.main.bounds.width / 5) * 6 + 50
+    private var deleteBtnTimer: Timer?
+    private var numberTimer: Timer?
     
     func setupDialPad(frame: CGRect)
     {
@@ -23,16 +28,20 @@ class BMDialView: UIView {
     
     private func setupUI() -> Void {
         textField = UITextField()
-        textField?.tintColor = GreenColor
+        textField?.tintColor = ThemeColor
         let gap = self.frame.size.width/5
         textField?.frame = CGRect.init(x: gap/2, y: (frame.size.height - requiredKeyPadHeight - 100)/2, width: self.frame.size.width-gap, height: 100)
         textField?.adjustsFontSizeToFitWidth = true
         textField?.textAlignment = NSTextAlignment.center
-        textField?.textColor = GreenColor;
+        textField?.textColor = ThemeColor;
         textField?.inputView = padView
+        textField?.inputAccessoryView = padView
         let backspaceButton = UIButton.init(type: UIButtonType.system)
         backspaceButton.setBackgroundImage(UIImage.init(named: "Backspace"), for: UIControlState.normal)
         backspaceButton.addTarget(self, action: #selector(backspaceTapped), for: UIControlEvents.touchUpInside)
+        let longPress = UILongPressGestureRecognizer.init(target: self, action: #selector(longPressedDeleteBtn))
+        longPress.minimumPressDuration = 0.3
+        backspaceButton.addGestureRecognizer(longPress)
         backspaceButton.frame = CGRect.init(x: 0, y: 0, width: 30, height: 30)
         textField?.rightView = backspaceButton
         textField?.rightViewMode = UITextFieldViewMode.never
@@ -59,6 +68,7 @@ class BMDialView: UIView {
             let btn = createButton(frame: frame)
             btn.tag = i + 1000
             btn.setAttributedTitle(buttonAttTitle(number: digit.number!, letter: digit.letters!), for: UIControlState.normal)
+            addLongPressRecogniser(btn: btn)
             x +=  xGap + width
             x = x > maxX ? xGap : x
         }
@@ -67,7 +77,7 @@ class BMDialView: UIView {
         callBtn.addTarget(self, action: #selector(call), for: UIControlEvents.touchUpInside)
         callBtn.titleLabel?.font = UIFont.init(name: "HelveticaNeue-UltraLight", size: 20)
         callBtn.setImage(UIImage.init(named: "Phone Filled"), for: UIControlState.normal)
-        callBtn.backgroundColor = GreenColor
+        callBtn.backgroundColor = ThemeColor
         callBtn.frame = CGRect.init(x: ((padView?.frame.size.width)!-width)/2, y: (padView?.frame.size.height)!-width - 30, width: width, height: width)
         callBtn.layer.cornerRadius = callBtn.frame.width/2
         callBtn.layer.masksToBounds = true
@@ -81,7 +91,7 @@ class BMDialView: UIView {
         btn.titleLabel?.textAlignment = NSTextAlignment.center
         btn.titleLabel?.numberOfLines = 0
         btn.layer.cornerRadius = frame.width/2
-        btn.layer.borderColor = GreenColor.cgColor
+        btn.layer.borderColor = ThemeColor.cgColor
         btn.layer.borderWidth = 2
         btn.layer.masksToBounds = true
         self.padView?.addSubview(btn)
@@ -93,24 +103,79 @@ class BMDialView: UIView {
         let digit = defaultDigits()[index]
         textField?.text?.append(digit.number!)
         textField?.rightViewMode = (textField?.text?.isEmpty)! ? .never : .always
+        let soundNo = 1220 + index
+        AudioServicesPlaySystemSound(SystemSoundID(soundNo))
     }
     
     @objc private func call(btn: UIButton) {
-        
+        callTapped?((textField?.text)!)
+    }
+    
+    @objc private func longPressedDeleteBtn(gesture: UILongPressGestureRecognizer) {
+        if(gesture.state == .began){
+            deleteBtnTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true, block: { (t) in
+                self.deleteLast()
+            })
+        }
+        else {
+            deleteBtnTimer?.invalidate()
+        }
     }
     
     @objc private func backspaceTapped(btn: UIButton) {
-        textField?.text?.characters = (textField?.text?.characters.dropLast())!
-        textField?.rightViewMode = (textField?.text?.isEmpty)! ? .never : .always
+        deleteLast()
+    }
+    
+    @objc private func longPressedButton(gesture: UILongPressGestureRecognizer) {
+        if(gesture.state == .began){
+            let btn = gesture.view as! UIButton
+            let index = btn.tag - 1000
+            let digit = defaultDigits()[index]
+            textField?.rightViewMode = (textField?.text?.isEmpty)! ? .never : .always
+            var subList = Array((digit.letters?.characters)!)
+            var i = 0
+            numberTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { (t) in
+                if(subList.count > i){
+                    let ch = subList[i]
+                    if(i > 0){
+                        self.deleteLast()
+                    }
+                    self.textField?.text?.append(ch)
+                    i += 1
+                }
+                else{
+                    self.deleteLast()
+                    i = 0
+                }
+            })
+        }
+        else if(gesture.state == .ended || gesture.state == .failed){
+            numberTimer?.invalidate()
+        }
+    }
+    
+    func deleteLast()  {
+        UIView.animate(withDuration: 0.2, delay: 0.0, options: [], animations: {
+            self.textField?.text?.characters = (self.textField?.text?.characters.dropLast())!
+        }, completion: { (finished: Bool) in
+            self.textField?.rightViewMode = (self.textField?.text?.isEmpty)! ? .never : .always
+        })
     }
     
     func buttonAttTitle(number: String, letter: String) -> NSAttributedString {
-        let numberAtt = NSMutableAttributedString.init(string: number, attributes: [NSForegroundColorAttributeName : GreenColor, NSFontAttributeName : UIFont.init(name: "HelveticaNeue-UltraLight", size: 40)!])
+        let numberAtt = NSMutableAttributedString.init(string: number, attributes: [NSForegroundColorAttributeName : ThemeColor, NSFontAttributeName : UIFont.init(name: "HelveticaNeue-UltraLight", size: 40)!])
         if(!letter.isEmpty){
-            let letterAtt = NSAttributedString.init(string: "\n" + letter, attributes: [NSForegroundColorAttributeName : GreenColor, NSFontAttributeName : UIFont.init(name: "HelveticaNeue-UltraLight", size: 15)!])
+            let letterAtt = NSAttributedString.init(string: "\n" + letter, attributes: [NSForegroundColorAttributeName : ThemeColor, NSFontAttributeName : UIFont.init(name: "HelveticaNeue-UltraLight", size: 15)!])
             numberAtt.append(letterAtt)
         }
         return numberAtt
+    }
+    
+    func addLongPressRecogniser(btn: UIButton) {
+        let gesture: UILongPressGestureRecognizer = UILongPressGestureRecognizer()
+        gesture.minimumPressDuration = 0.3
+        gesture.addTarget(self, action: #selector(longPressedButton))
+        btn.addGestureRecognizer(gesture)
     }
     
     private func defaultDigits() -> [PhoneDigit] {
