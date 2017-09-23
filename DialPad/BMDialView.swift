@@ -8,13 +8,12 @@
 
 import UIKit
 
-
 class BMDialView: UIView {
     
     var padView: UIView?
     let GreenColor = UIColor(red: 21/255.0, green: 134/255.0, blue: 88/255.0, alpha: 1.0)
     public var textField: UITextField?
-    public var requiredKeyPadHeight = (UIScreen.main.bounds.width / 5) * 6
+    public var requiredKeyPadHeight = (UIScreen.main.bounds.width / 5) * 6 + 50
     
     func setupDialPad(frame: CGRect)
     {
@@ -23,22 +22,28 @@ class BMDialView: UIView {
     }
     
     private func setupUI() -> Void {
-        
         textField = UITextField()
-        textField?.frame = CGRect.init(x: 10, y: (frame.size.height - requiredKeyPadHeight - 100)/2, width: self.frame.size.width-20, height: 100)
+        textField?.tintColor = GreenColor
+        let gap = self.frame.size.width/5
+        textField?.frame = CGRect.init(x: gap/2, y: (frame.size.height - requiredKeyPadHeight - 100)/2, width: self.frame.size.width-gap, height: 100)
         textField?.adjustsFontSizeToFitWidth = true
         textField?.textAlignment = NSTextAlignment.center
         textField?.textColor = GreenColor;
-        textField?.font = UIFont.init(name: "HelveticaNeue-UltraLight", size: 45)
+        textField?.inputView = padView
+        let backspaceButton = UIButton.init(type: UIButtonType.system)
+        backspaceButton.setBackgroundImage(UIImage.init(named: "icons8-Backspace"), for: UIControlState.normal)
+        backspaceButton.addTarget(self, action: #selector(backspaceTapped), for: UIControlEvents.touchUpInside)
+        backspaceButton.frame = CGRect.init(x: 0, y: 0, width: 30, height: 30)
+        textField?.rightView = backspaceButton
+        textField?.rightViewMode = UITextFieldViewMode.never
+        textField?.font = UIFont.init(name: "HelveticaNeue-UltraLight", size: 55)
         addSubview(textField!)
         
         padView = UIView()
         padView?.frame = CGRect.init(x: 0, y: frame.size.height - requiredKeyPadHeight, width: self.frame.size.width, height: requiredKeyPadHeight)
         self.addSubview(padView!)
         
-        
-        
-        let digitsList = digits()
+        let digitsList = defaultDigits()
         
         let width = self.frame.size.width/5
         let xGap: CGFloat = width/2
@@ -51,41 +56,64 @@ class BMDialView: UIView {
             let row = Float(i / 3).rounded(.towardZero)
             y = CGFloat(row) * (width + yGap)
             let frame = CGRect.init(x: x, y: y, width: width, height: width)
-            createButton(number: digit.number!, letter: digit.letters!, frame: frame)
+            let btn = createButton(frame: frame)
+            btn.tag = i + 1000
+            btn.setAttributedTitle(buttonAttTitle(number: digit.number!, letter: digit.letters!), for: UIControlState.normal)
             x +=  xGap + width
             x = x > maxX ? xGap : x
         }
         
-//        let callBtn: UIButton = UIButton()
-//        callBtn.addTarget(self, action: #selector(buttonTapped), for: UIControlEvents.touchUpInside)
-//        callBtn.titleLabel?.font = UIFont.init(name: "HelveticaNeue-UltraLight", size: 20)
-//        callBtn.frame = CGRect.init(x: (padView?.frame.size.width-width/)2, y: <#T##CGFloat#>, width: <#T##CGFloat#>, height: <#T##CGFloat#>)
-//        padView?.addSubview(callBtn)
-        
+        let callBtn: UIButton = UIButton()
+        callBtn.addTarget(self, action: #selector(call), for: UIControlEvents.touchUpInside)
+        callBtn.titleLabel?.font = UIFont.init(name: "HelveticaNeue-UltraLight", size: 20)
+        callBtn.setImage(UIImage.init(named: "icons8-Phone Filled"), for: UIControlState.normal)
+        callBtn.backgroundColor = GreenColor
+        callBtn.frame = CGRect.init(x: ((padView?.frame.size.width)!-width)/2, y: (padView?.frame.size.height)!-width - 30, width: width, height: width)
+        callBtn.layer.cornerRadius = callBtn.frame.width/2
+        callBtn.layer.masksToBounds = true
+        padView?.addSubview(callBtn)
     }
     
-    private func createButton(number: String, letter: String, frame: CGRect) {
+    private func createButton(frame: CGRect) -> UIButton {
         let btn: UIButton = UIButton.init(type: UIButtonType.system)
         btn.addTarget(self, action: #selector(buttonTapped), for: UIControlEvents.touchUpInside)
-        btn.titleLabel?.font = UIFont.init(name: "HelveticaNeue-UltraLight", size: 20)
         btn.frame = frame;
+        btn.titleLabel?.textAlignment = NSTextAlignment.center
+        btn.titleLabel?.numberOfLines = 0
         btn.layer.cornerRadius = frame.width/2
         btn.layer.borderColor = GreenColor.cgColor
         btn.layer.borderWidth = 2
         btn.layer.masksToBounds = true
         self.padView?.addSubview(btn)
+        return btn
+    }
+    
+    @objc private func buttonTapped(btn: UIButton) {
+        let index = btn.tag - 1000
+        let digit = defaultDigits()[index]
+        textField?.text?.append(digit.number!)
+        textField?.rightViewMode = (textField?.text?.isEmpty)! ? .never : .always
+    }
+    
+    @objc private func call(btn: UIButton) {
+        
+    }
+    
+    @objc private func backspaceTapped(btn: UIButton) {
+        textField?.text?.characters = (textField?.text?.characters.dropLast())!
+        textField?.rightViewMode = (textField?.text?.isEmpty)! ? .never : .always
+    }
+    
+    func buttonAttTitle(number: String, letter: String) -> NSAttributedString {
         let numberAtt = NSMutableAttributedString.init(string: number, attributes: [NSForegroundColorAttributeName : GreenColor, NSFontAttributeName : UIFont.init(name: "HelveticaNeue-UltraLight", size: 40)!])
-        
-        let letterAtt = NSAttributedString.init(string: "\n" + letter, attributes: [NSForegroundColorAttributeName : GreenColor, NSFontAttributeName : UIFont.init(name: "HelveticaNeue-UltraLight", size: 15)!])
-        numberAtt.append(letterAtt)
-        btn.setAttributedTitle(numberAtt, for: UIControlState.normal)
+        if(!letter.isEmpty){
+            let letterAtt = NSAttributedString.init(string: "\n" + letter, attributes: [NSForegroundColorAttributeName : GreenColor, NSFontAttributeName : UIFont.init(name: "HelveticaNeue-UltraLight", size: 15)!])
+            numberAtt.append(letterAtt)
+        }
+        return numberAtt
     }
     
-    @objc private func buttonTapped(sender: UIButton) {
-        
-    }
-    
-    private func digits() -> [PhoneDigit] {
+    private func defaultDigits() -> [PhoneDigit] {
         var digitList: [PhoneDigit] = [PhoneDigit]()
         digitList.append(PhoneDigit.init(number: "1", letters: ""))
         digitList.append(PhoneDigit.init(number: "2", letters: "ABC"))
