@@ -31,7 +31,7 @@ class BMDialView: UIView {
         textField?.textColor = GreenColor;
         textField?.inputView = padView
         let backspaceButton = UIButton.init(type: UIButtonType.system)
-        backspaceButton.setBackgroundImage(UIImage.init(named: "icons8-Backspace"), for: UIControlState.normal)
+        backspaceButton.setBackgroundImage(UIImage.init(named: "Backspace"), for: UIControlState.normal)
         backspaceButton.addTarget(self, action: #selector(backspaceTapped), for: UIControlEvents.touchUpInside)
         backspaceButton.frame = CGRect.init(x: 0, y: 0, width: 30, height: 30)
         textField?.rightView = backspaceButton
@@ -66,7 +66,7 @@ class BMDialView: UIView {
         let callBtn: UIButton = UIButton()
         callBtn.addTarget(self, action: #selector(call), for: UIControlEvents.touchUpInside)
         callBtn.titleLabel?.font = UIFont.init(name: "HelveticaNeue-UltraLight", size: 20)
-        callBtn.setImage(UIImage.init(named: "icons8-Phone Filled"), for: UIControlState.normal)
+        callBtn.setImage(UIImage.init(named: "Phone Filled"), for: UIControlState.normal)
         callBtn.backgroundColor = GreenColor
         callBtn.frame = CGRect.init(x: ((padView?.frame.size.width)!-width)/2, y: (padView?.frame.size.height)!-width - 30, width: width, height: width)
         callBtn.layer.cornerRadius = callBtn.frame.width/2
