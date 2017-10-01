@@ -13,7 +13,7 @@ class BMDialView: UIView {
     
     var callTapped: ((String)->())?
     let ThemeColor = UIColor(red: 21/255.0, green: 134/255.0, blue: 88/255.0, alpha: 1.0)
-    
+    let width: Float = 0
     private var padView: UIView?
     private var textField: UITextField?
     private var requiredKeyPadHeight = (UIScreen.main.bounds.width / 5) * 6 + 50
@@ -30,7 +30,7 @@ class BMDialView: UIView {
         textField = UITextField()
         textField?.tintColor = UIColor.clear
         let gap = self.frame.size.width/5
-        textField?.frame = CGRect.init(x: gap/2, y: (frame.size.height - requiredKeyPadHeight - 100)/2, width: self.frame.size.width-gap, height: 100)
+        textField?.frame = CGRect.init(x: gap/2, y: (frame.size.height - requiredKeyPadHeight - 150)/2, width: self.frame.size.width-gap, height: 100)
         textField?.adjustsFontSizeToFitWidth = true
         textField?.textAlignment = NSTextAlignment.center
         textField?.textColor = ThemeColor;
