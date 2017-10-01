@@ -36,7 +36,9 @@ class BMDialView: UIView {
         textField?.inputView = padView
         textField?.inputAccessoryView = padView
         let backspaceButton = UIButton.init(type: UIButtonType.system)
-        backspaceButton.setBackgroundImage(UIImage.init(named: "Backspace"), for: UIControlState.normal)
+        let image = UIImage(named:"Backspace")?.withRenderingMode(.alwaysTemplate)
+        backspaceButton.tintColor = ThemeColor
+        backspaceButton.setBackgroundImage(image, for: UIControlState.normal)
         backspaceButton.addTarget(self, action: #selector(backspaceTapped), for: UIControlEvents.touchUpInside)
         let longPress = UILongPressGestureRecognizer.init(target: self, action: #selector(longPressedDeleteBtn))
         longPress.minimumPressDuration = 0.3
