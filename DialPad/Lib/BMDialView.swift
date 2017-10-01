@@ -12,7 +12,7 @@ import AudioToolbox
 class BMDialView: UIView {
     
     var callTapped: ((String)->())?
-    let ThemeColor = UIColor(red: 21/255.0, green: 134/255.0, blue: 88/255.0, alpha: 1.0)
+    var ThemeColor = UIColor(red: 21/255.0, green: 134/255.0, blue: 88/255.0, alpha: 1.0)
     private var padView: UIView?
     private var textField: UITextField?
     private var deleteBtnTimer: Timer?
