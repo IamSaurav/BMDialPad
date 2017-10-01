@@ -13,10 +13,8 @@ class BMDialView: UIView {
     
     var callTapped: ((String)->())?
     let ThemeColor = UIColor(red: 21/255.0, green: 134/255.0, blue: 88/255.0, alpha: 1.0)
-    let width: Float = 0
     private var padView: UIView?
     private var textField: UITextField?
-    private var requiredKeyPadHeight = (UIScreen.main.bounds.width / 5) * 6 + 50
     private var deleteBtnTimer: Timer?
     private var numberTimer: Timer?
     
@@ -27,10 +25,11 @@ class BMDialView: UIView {
     }
     
     private func setupUI() -> Void {
+        let requiredKeyPadHeight = (self.frame.size.width / 5) * 6 + 50
         textField = UITextField()
         textField?.tintColor = UIColor.clear
         let gap = self.frame.size.width/5
-        textField?.frame = CGRect.init(x: gap/2, y: (frame.size.height - requiredKeyPadHeight - 150)/2, width: self.frame.size.width-gap, height: 100)
+        textField?.frame = CGRect.init(x: gap/2, y: (frame.size.height - requiredKeyPadHeight - 100)/2, width: self.frame.size.width-gap, height: 100)
         textField?.adjustsFontSizeToFitWidth = true
         textField?.textAlignment = NSTextAlignment.center
         textField?.textColor = ThemeColor;
@@ -55,7 +54,7 @@ class BMDialView: UIView {
         let digitsList = defaultDigits()
         
         let width = self.frame.size.width/5
-        let xGap: CGFloat = width/2
+        let xGap: CGFloat = (self.frame.size.width - (width * 3))/4
         var x: CGFloat = xGap
         var y: CGFloat = 0
         let yGap = xGap/2
