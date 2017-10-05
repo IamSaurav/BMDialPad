@@ -12,7 +12,10 @@ import AudioToolbox
 class BMDialView: UIView {
     
     var callTapped: ((String)->())?
-    var ThemeColor = UIColor(red: 21/255.0, green: 134/255.0, blue: 88/255.0, alpha: 1.0)
+    var CallButtonColor = UIColor(red: 21/255.0, green: 134/255.0, blue: 88/255.0, alpha: 1.0)
+    var TextColor = UIColor(red: 21/255.0, green: 134/255.0, blue: 88/255.0, alpha: 1.0)
+    var BorderColor = UIColor(red: 21/255.0, green: 134/255.0, blue: 88/255.0, alpha: 1.0)
+    
     private var padView: UIView?
     private var textField: UITextField?
     private var deleteBtnTimer: Timer?
@@ -32,12 +35,12 @@ class BMDialView: UIView {
         textField?.frame = CGRect.init(x: gap/2, y: (frame.size.height - requiredKeyPadHeight - 100)/2, width: self.frame.size.width-gap, height: 100)
         textField?.adjustsFontSizeToFitWidth = true
         textField?.textAlignment = NSTextAlignment.center
-        textField?.textColor = ThemeColor;
+        textField?.textColor = TextColor;
         textField?.inputView = padView
         textField?.inputAccessoryView = padView
         let backspaceButton = UIButton.init(type: UIButtonType.system)
         let image = UIImage(named:"Backspace")?.withRenderingMode(.alwaysTemplate)
-        backspaceButton.tintColor = ThemeColor
+        backspaceButton.tintColor = CallButtonColor
         backspaceButton.setBackgroundImage(image, for: UIControlState.normal)
         backspaceButton.addTarget(self, action: #selector(backspaceTapped), for: UIControlEvents.touchUpInside)
         let longPress = UILongPressGestureRecognizer.init(target: self, action: #selector(longPressedDeleteBtn))
@@ -46,7 +49,7 @@ class BMDialView: UIView {
         backspaceButton.frame = CGRect.init(x: 0, y: 0, width: 30, height: 30)
         textField?.rightView = backspaceButton
         textField?.rightViewMode = UITextFieldViewMode.never
-        textField?.font = UIFont.init(name: "HelveticaNeue-UltraLight", size: 55)
+        textField?.font = UIFont.init(name: "HelveticaNeue", size: 55)
         addSubview(textField!)
         
         padView = UIView()
@@ -76,9 +79,9 @@ class BMDialView: UIView {
         
         let callBtn: UIButton = UIButton()
         callBtn.addTarget(self, action: #selector(call), for: UIControlEvents.touchUpInside)
-        callBtn.titleLabel?.font = UIFont.init(name: "HelveticaNeue-UltraLight", size: 20)
+        callBtn.titleLabel?.font = UIFont.init(name: "HelveticaNeue", size: 20)
         callBtn.setImage(UIImage.init(named: "Phone Filled"), for: UIControlState.normal)
-        callBtn.backgroundColor = ThemeColor
+        callBtn.backgroundColor = CallButtonColor
         callBtn.frame = CGRect.init(x: ((padView?.frame.size.width)!-width)/2, y: (padView?.frame.size.height)!-width - 30, width: width, height: width)
         callBtn.layer.cornerRadius = callBtn.frame.width/2
         callBtn.layer.masksToBounds = true
@@ -92,7 +95,7 @@ class BMDialView: UIView {
         btn.titleLabel?.textAlignment = NSTextAlignment.center
         btn.titleLabel?.numberOfLines = 0
         btn.layer.cornerRadius = frame.width/2
-        btn.layer.borderColor = ThemeColor.cgColor
+        btn.layer.borderColor = BorderColor.cgColor
         btn.layer.borderWidth = 2
         btn.layer.masksToBounds = true
         self.padView?.addSubview(btn)
@@ -164,9 +167,9 @@ class BMDialView: UIView {
     }
     
     func buttonAttTitle(number: String, letter: String) -> NSAttributedString {
-        let numberAtt = NSMutableAttributedString.init(string: number, attributes: [NSForegroundColorAttributeName : ThemeColor, NSFontAttributeName : UIFont.init(name: "HelveticaNeue-UltraLight", size: 40)!])
+        let numberAtt = NSMutableAttributedString.init(string: number, attributes: [NSForegroundColorAttributeName : TextColor, NSFontAttributeName : UIFont.init(name: "HelveticaNeue", size: 40)!])
         if(!letter.isEmpty){
-            let letterAtt = NSAttributedString.init(string: "\n" + letter, attributes: [NSForegroundColorAttributeName : ThemeColor, NSFontAttributeName : UIFont.init(name: "HelveticaNeue-UltraLight", size: 15)!])
+            let letterAtt = NSAttributedString.init(string: "\n" + letter, attributes: [NSForegroundColorAttributeName : TextColor, NSFontAttributeName : UIFont.init(name: "HelveticaNeue", size: 13)!])
             numberAtt.append(letterAtt)
         }
         return numberAtt
