@@ -40,7 +40,7 @@ class BMDialView: UIView {
         textField?.inputAccessoryView = padView
         let backspaceButton = UIButton.init(type: UIButtonType.system)
         let image = UIImage(named:"Backspace")?.withRenderingMode(.alwaysTemplate)
-        backspaceButton.tintColor = CallButtonColor
+        backspaceButton.tintColor = UIColor.cMagenta
         backspaceButton.setBackgroundImage(image, for: UIControlState.normal)
         backspaceButton.addTarget(self, action: #selector(backspaceTapped), for: UIControlEvents.touchUpInside)
         let longPress = UILongPressGestureRecognizer.init(target: self, action: #selector(longPressedDeleteBtn))
@@ -49,7 +49,7 @@ class BMDialView: UIView {
         backspaceButton.frame = CGRect.init(x: 0, y: 0, width: 30, height: 30)
         textField?.rightView = backspaceButton
         textField?.rightViewMode = UITextFieldViewMode.never
-        textField?.font = UIFont.init(name: "HelveticaNeue", size: 55)
+        textField?.font = UIFont.init(name: "HelveticaNeue-Thin", size: 55)
         addSubview(textField!)
         
         padView = UIView()
@@ -79,7 +79,7 @@ class BMDialView: UIView {
         
         let callBtn: UIButton = UIButton()
         callBtn.addTarget(self, action: #selector(call), for: UIControlEvents.touchUpInside)
-        callBtn.titleLabel?.font = UIFont.init(name: "HelveticaNeue", size: 20)
+        callBtn.titleLabel?.font = UIFont.init(name: "HelveticaNeue-Thin", size: 20)
         callBtn.setImage(UIImage.init(named: "Phone Filled"), for: UIControlState.normal)
         callBtn.backgroundColor = CallButtonColor
         callBtn.frame = CGRect.init(x: ((padView?.frame.size.width)!-width)/2, y: (padView?.frame.size.height)!-width - 30, width: width, height: width)
@@ -167,9 +167,9 @@ class BMDialView: UIView {
     }
     
     func buttonAttTitle(number: String, letter: String) -> NSAttributedString {
-        let numberAtt = NSMutableAttributedString.init(string: number, attributes: [NSForegroundColorAttributeName : TextColor, NSFontAttributeName : UIFont.init(name: "HelveticaNeue", size: 40)!])
+        let numberAtt = NSMutableAttributedString.init(string: number, attributes: [NSForegroundColorAttributeName : TextColor, NSFontAttributeName : UIFont.init(name: "HelveticaNeue-Thin", size: 40)!])
         if(!letter.isEmpty){
-            let letterAtt = NSAttributedString.init(string: "\n" + letter, attributes: [NSForegroundColorAttributeName : TextColor, NSFontAttributeName : UIFont.init(name: "HelveticaNeue", size: 13)!])
+            let letterAtt = NSAttributedString.init(string: "\n" + letter, attributes: [NSForegroundColorAttributeName : TextColor, NSFontAttributeName : UIFont.init(name: "HelveticaNeue-Thin", size: 13)!])
             numberAtt.append(letterAtt)
         }
         return numberAtt
@@ -197,6 +197,10 @@ class BMDialView: UIView {
         digitList.append(PhoneDigit.init(number: "0", letters: "+"))
         digitList.append(PhoneDigit.init(number: "#", letters: ""))
         return digitList
+    }
+    
+    func setText(text: String) {
+        textField?.text = text
     }
     
 }
