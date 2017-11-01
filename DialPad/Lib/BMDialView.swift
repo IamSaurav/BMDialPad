@@ -51,6 +51,11 @@ class BMDialView: UIView, UITextFieldDelegate {
         backspaceButton.addGestureRecognizer(longPress)
         backspaceButton.frame = CGRect.init(x: 0, y: 0, width: 30, height: 30)
         textField?.rightView = backspaceButton
+        let leftView = UIView.init()
+        leftView.frame = CGRect.init(x: 0, y: 0, width: 10, height: 0)
+        leftView.backgroundColor = UIColor.clear
+        textField?.leftView = leftView
+        textField?.leftViewMode = .always
         textField?.rightViewMode = UITextFieldViewMode.never
         textField?.font = UIFont.init(name: "HelveticaNeue-Thin", size: 55)
         addSubview(textField!)
@@ -109,6 +114,7 @@ class BMDialView: UIView, UITextFieldDelegate {
         let index = btn.tag - 1000
         let digit = defaultDigits()[index]
         textField?.insertText(digit.number!)
+        textField?.layoutIfNeeded()
         textField?.tintColor = .clear
         textField?.rightViewMode = (textField?.text?.isEmpty)! ? .never : .always
         let soundNo = 1220 + index
@@ -146,7 +152,6 @@ class BMDialView: UIView, UITextFieldDelegate {
             let btn = gesture.view as! UIButton
             let index = btn.tag - 1000
             let digit = defaultDigits()[index]
-            textField?.rightViewMode = (textField?.text?.isEmpty)! ? .never : .always
             var subList = Array((digit.letters?.characters)!)
             var i = 0
             numberTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { (t) in
@@ -155,7 +160,8 @@ class BMDialView: UIView, UITextFieldDelegate {
                     if(i > 0){
                         self.delete()
                     }
-                    self.textField?.text?.append(ch)
+                    self.textField?.insertText(String.init(ch))
+                    self.textField?.layoutIfNeeded()
                     i += 1
                 }
                 else{
@@ -165,6 +171,7 @@ class BMDialView: UIView, UITextFieldDelegate {
             })
         }
         else if(gesture.state == .ended || gesture.state == .failed){
+            textField?.rightViewMode = (textField?.text?.isEmpty)! ? .never : .always
             numberTimer?.invalidate()
         }
     }
