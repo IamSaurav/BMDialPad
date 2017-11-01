@@ -15,7 +15,8 @@ class BMDialView: UIView, UITextFieldDelegate {
     var CallButtonColor = UIColor(red: 21/255.0, green: 134/255.0, blue: 88/255.0, alpha: 1.0)
     var TextColor = UIColor(red: 21/255.0, green: 134/255.0, blue: 88/255.0, alpha: 1.0)
     var BorderColor = UIColor(red: 21/255.0, green: 134/255.0, blue: 88/255.0, alpha: 1.0)
-
+    var CursorColor = UIColor(red: 21/255.0, green: 134/255.0, blue: 88/255.0, alpha: 1.0)
+    
     private var padView: UIView?
     private var textField: UITextField?
     private var deleteBtnTimer: Timer?
@@ -32,7 +33,7 @@ class BMDialView: UIView, UITextFieldDelegate {
         width = width <= 100 ? width : 100
         let requiredKeyPadHeight = self.frame.size.height * 0.85
         textField = UITextField()
-        textField?.tintColor = BorderColor
+        textField?.tintColor = CursorColor
         let gap = self.frame.size.width/5
         textField?.frame = CGRect.init(x: gap/2, y: (frame.size.height - requiredKeyPadHeight - 100)/2, width: self.frame.size.width-gap, height: 100)
         textField?.minimumFontSize = 2
@@ -58,7 +59,7 @@ class BMDialView: UIView, UITextFieldDelegate {
         padView = UIView()
         padView?.frame = CGRect.init(x: 0, y: frame.size.height - requiredKeyPadHeight, width: self.frame.size.width, height: requiredKeyPadHeight)
         self.addSubview(padView!)
-
+        
         let digitsList = defaultDigits()
         
         let xGap: CGFloat = (self.frame.size.width - (width * 3))/4
@@ -107,11 +108,10 @@ class BMDialView: UIView, UITextFieldDelegate {
     @objc private func buttonTapped(btn: UIButton) {
         let index = btn.tag - 1000
         let digit = defaultDigits()[index]
-        textField?.text?.append(digit.number!)
+        textField?.insertText(digit.number!)
+        textField?.tintColor = .clear
         textField?.rightViewMode = (textField?.text?.isEmpty)! ? .never : .always
         let soundNo = 1220 + index
-        let lastPosition = textField?.endOfDocument
-        textField?.selectedTextRange = textField?.textRange(from: lastPosition!, to: lastPosition!)
         AudioServicesPlaySystemSound(SystemSoundID(soundNo))
     }
     
@@ -214,7 +214,7 @@ class BMDialView: UIView, UITextFieldDelegate {
         if (field.text?.isEmpty)! {
             textField?.tintColor = UIColor.clear
         }else{
-            textField?.tintColor = BorderColor
+            textField?.tintColor = CursorColor
         }
         self.textField?.rightViewMode = (self.textField?.text?.isEmpty)! ? .never : .always
     }
