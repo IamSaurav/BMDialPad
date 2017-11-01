@@ -9,13 +9,13 @@
 import UIKit
 import AudioToolbox
 
-class BMDialView: UIView {
+class BMDialView: UIView, UITextFieldDelegate {
     
     var callTapped: ((String)->())?
     var CallButtonColor = UIColor(red: 21/255.0, green: 134/255.0, blue: 88/255.0, alpha: 1.0)
     var TextColor = UIColor(red: 21/255.0, green: 134/255.0, blue: 88/255.0, alpha: 1.0)
     var BorderColor = UIColor(red: 21/255.0, green: 134/255.0, blue: 88/255.0, alpha: 1.0)
-    
+
     private var padView: UIView?
     private var textField: UITextField?
     private var deleteBtnTimer: Timer?
@@ -28,19 +28,21 @@ class BMDialView: UIView {
     }
     
     private func setupUI() -> Void {
-        let requiredKeyPadHeight = (self.frame.size.width / 5) * 6 + 50
+        var width = self.frame.size.width/5
+        width = width <= 100 ? width : 100
+        let requiredKeyPadHeight = self.frame.size.height * 0.85
         textField = UITextField()
-        textField?.tintColor = UIColor.white
+        textField?.tintColor = BorderColor
         let gap = self.frame.size.width/5
         textField?.frame = CGRect.init(x: gap/2, y: (frame.size.height - requiredKeyPadHeight - 100)/2, width: self.frame.size.width-gap, height: 100)
+        textField?.minimumFontSize = 2
         textField?.adjustsFontSizeToFitWidth = true
         textField?.textAlignment = NSTextAlignment.center
         textField?.textColor = TextColor;
-        textField?.inputView = padView
-        textField?.inputAccessoryView = padView
+        textField?.inputView = UIView.init()
         let backspaceButton = UIButton.init(type: UIButtonType.system)
-        let image = UIImage(named:"Backspace")?.withRenderingMode(.alwaysTemplate)
-        backspaceButton.tintColor = UIColor.cMagenta
+        let image = UIImage(named:"backspace")?.withRenderingMode(.alwaysTemplate)
+        backspaceButton.tintColor = TextColor
         backspaceButton.setBackgroundImage(image, for: UIControlState.normal)
         backspaceButton.addTarget(self, action: #selector(backspaceTapped), for: UIControlEvents.touchUpInside)
         let longPress = UILongPressGestureRecognizer.init(target: self, action: #selector(longPressedDeleteBtn))
@@ -51,14 +53,14 @@ class BMDialView: UIView {
         textField?.rightViewMode = UITextFieldViewMode.never
         textField?.font = UIFont.init(name: "HelveticaNeue-Thin", size: 55)
         addSubview(textField!)
-        
+        textField?.sendActions(for: .allEvents)
+        textField?.addTarget(self, action: #selector(textFieldChanged), for:.allEvents)
         padView = UIView()
         padView?.frame = CGRect.init(x: 0, y: frame.size.height - requiredKeyPadHeight, width: self.frame.size.width, height: requiredKeyPadHeight)
         self.addSubview(padView!)
-        
+
         let digitsList = defaultDigits()
         
-        let width = self.frame.size.width/5
         let xGap: CGFloat = (self.frame.size.width - (width * 3))/4
         var x: CGFloat = xGap
         var y: CGFloat = 0
@@ -82,7 +84,7 @@ class BMDialView: UIView {
         callBtn.titleLabel?.font = UIFont.init(name: "HelveticaNeue-Thin", size: 20)
         callBtn.setImage(UIImage.init(named: "Phone Filled"), for: UIControlState.normal)
         callBtn.backgroundColor = CallButtonColor
-        callBtn.frame = CGRect.init(x: ((padView?.frame.size.width)!-width)/2, y: (padView?.frame.size.height)!-width - 30, width: width, height: width)
+        callBtn.frame = CGRect.init(x: ((padView?.frame.size.width)!-width)/2, y: (padView?.frame.size.height)!-width - 40, width: width, height: width)
         callBtn.layer.cornerRadius = callBtn.frame.width/2
         callBtn.layer.masksToBounds = true
         padView?.addSubview(callBtn)
@@ -108,6 +110,8 @@ class BMDialView: UIView {
         textField?.text?.append(digit.number!)
         textField?.rightViewMode = (textField?.text?.isEmpty)! ? .never : .always
         let soundNo = 1220 + index
+        let lastPosition = textField?.endOfDocument
+        textField?.selectedTextRange = textField?.textRange(from: lastPosition!, to: lastPosition!)
         AudioServicesPlaySystemSound(SystemSoundID(soundNo))
     }
     
@@ -118,7 +122,7 @@ class BMDialView: UIView {
     @objc private func longPressedDeleteBtn(gesture: UILongPressGestureRecognizer) {
         if(gesture.state == .began){
             deleteBtnTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true, block: { (t) in
-                self.deleteLast()
+                self.delete()
             })
         }
         else {
@@ -127,7 +131,14 @@ class BMDialView: UIView {
     }
     
     @objc private func backspaceTapped(btn: UIButton) {
-        deleteLast()
+        let color = textField?.tintColor
+        delete()
+        if(textField?.text?.isEmpty)!{
+            textField?.tintColor = .clear
+        }
+        else{
+            textField?.tintColor = color
+        }
     }
     
     @objc private func longPressedButton(gesture: UILongPressGestureRecognizer) {
@@ -142,13 +153,13 @@ class BMDialView: UIView {
                 if(subList.count > i){
                     let ch = subList[i]
                     if(i > 0){
-                        self.deleteLast()
+                        self.delete()
                     }
                     self.textField?.text?.append(ch)
                     i += 1
                 }
                 else{
-                    self.deleteLast()
+                    self.delete()
                     i = 0
                 }
             })
@@ -158,9 +169,9 @@ class BMDialView: UIView {
         }
     }
     
-    func deleteLast()  {
+    func delete()  {
         UIView.animate(withDuration: 0.2, delay: 0.0, options: [], animations: {
-            self.textField?.text?.characters = (self.textField?.text?.characters.dropLast())!
+            self.textField?.deleteBackward()
         }, completion: { (finished: Bool) in
             self.textField?.rightViewMode = (self.textField?.text?.isEmpty)! ? .never : .always
         })
@@ -199,10 +210,30 @@ class BMDialView: UIView {
         return digitList
     }
     
+    func textFieldChanged(field: UITextField)  {
+        if (field.text?.isEmpty)! {
+            textField?.tintColor = UIColor.clear
+        }else{
+            textField?.tintColor = BorderColor
+        }
+        self.textField?.rightViewMode = (self.textField?.text?.isEmpty)! ? .never : .always
+    }
+    
     func setText(text: String) {
         textField?.text = text
     }
     
+    func text() -> String? {
+        return textField?.text
+    }
+    
+}
+
+extension UITextField {
+    func setCursor(position: Int) {
+        let position = self.position(from: beginningOfDocument, offset: position)!
+        selectedTextRange = textRange(from: position, to: position)
+    }
 }
 
 
