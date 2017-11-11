@@ -47,7 +47,7 @@ class BMDialView: UIView, UITextFieldDelegate {
         backspaceButton.setBackgroundImage(image, for: UIControlState.normal)
         backspaceButton.addTarget(self, action: #selector(backspaceTapped), for: UIControlEvents.touchUpInside)
         let longPress = UILongPressGestureRecognizer.init(target: self, action: #selector(longPressedDeleteBtn))
-        longPress.minimumPressDuration = 0.3
+        longPress.minimumPressDuration = 0.2
         backspaceButton.addGestureRecognizer(longPress)
         backspaceButton.frame = CGRect.init(x: 0, y: 0, width: 30, height: 30)
         textField?.rightView = backspaceButton
@@ -131,7 +131,7 @@ class BMDialView: UIView, UITextFieldDelegate {
                 self.delete()
             })
         }
-        else {
+        else if (gesture.state == .ended || gesture.state == .cancelled || gesture.state == .failed){
             deleteBtnTimer?.invalidate()
         }
     }
