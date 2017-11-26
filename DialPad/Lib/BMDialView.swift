@@ -31,7 +31,7 @@ class BMDialView: UIView, UITextFieldDelegate {
     private func setupUI() -> Void {
         var width = self.frame.size.width/5
         width = width <= 100 ? width : 100
-        let requiredKeyPadHeight = self.frame.size.height * 0.85
+        let requiredKeyPadHeight = width * 7.5
         textField = UITextField()
         textField?.tintColor = CursorColor
         let gap = self.frame.size.width/5
@@ -70,7 +70,7 @@ class BMDialView: UIView, UITextFieldDelegate {
         let xGap: CGFloat = (self.frame.size.width - (width * 3))/4
         var x: CGFloat = xGap
         var y: CGFloat = 0
-        let yGap = xGap/2
+        let yGap = xGap
         let maxX = (3 * xGap + 2 * width)
         for i in 0 ..< digitsList.count {
             let digit = digitsList[i]
@@ -90,7 +90,7 @@ class BMDialView: UIView, UITextFieldDelegate {
         callBtn.titleLabel?.font = UIFont.init(name: "HelveticaNeue-Thin", size: 20)
         callBtn.setImage(UIImage.init(named: "Phone Filled"), for: UIControlState.normal)
         callBtn.backgroundColor = CallButtonColor
-        callBtn.frame = CGRect.init(x: ((padView?.frame.size.width)!-width)/2, y: (padView?.frame.size.height)!-width - 40, width: width, height: width)
+        callBtn.frame = CGRect.init(x: ((padView?.frame.size.width)!-width)/2, y: y + width + yGap, width: width, height: width)
         callBtn.layer.cornerRadius = callBtn.frame.width/2
         callBtn.layer.masksToBounds = true
         padView?.addSubview(callBtn)
